@@ -1337,6 +1337,7 @@ function setGame() {
     client.user.setPresence(presence);*/
 
     client.user.setActivity(getRandom("with lens focus",
+                                      "with Colouring Pencils!",
                                       "Keeping an eye on TwoDog",
                                       "Recording a new tune",
                                       "writing latest novel",
