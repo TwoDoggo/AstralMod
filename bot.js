@@ -1,6 +1,6 @@
 /****************************************
  *
- *   AstralMod: Moderation bot for AstralPhaser Central and other Discord servers
+ *   WorkFlow Bot: Moderation bot for AstralPhaser Central and other Discord servers
  *   Copyright (C) 2017 Victor Tran
  *
  *   This program is free software: you can redistribute it and/or modify
@@ -21,10 +21,10 @@
 var amVersion;
 if (process.argv.indexOf("--blueprint") == -1) {
     amVersion = "2.8.0";
-    global.prefix = "am:";
+    global.prefix = "?";
 } else {
     amVersion = "Blueprint";
-    global.prefix = "am#";
+    global.prefix = "wf#";
 }
 
 const Discord = require('discord.js');
@@ -172,14 +172,14 @@ var screen = blessed.screen({
     smartCSR: true,
     dockBorders: true
 });
-screen.title = 'AstralMod ' + amVersion;
+screen.title = 'WorkFlow Bot ' + amVersion;
 
 var titleBox = blessed.text({
     top: "0",
     left: "0",
     width: "100%",
     height: "1",
-    content: "AstralMod " + amVersion + " Console",
+    content: "WorkFlow Bot " + amVersion + " Console",
     tags: true,
     style: {
         fg: 'black',
@@ -855,24 +855,24 @@ function processConsoleInput(line) {
 
     var lLine = line.toLowerCase();
     if (lLine == "help") {
-        var help = "AstralMod Console Commands:\n" +
-                   "save                    Saves AstralMod configuration settings to disk. This happens every 30 seconds.\n" +
+        var help = "WorkFlow Bot Console Commands:\n" +
+                   "save                    Saves WorkFlow Bot configuration settings to disk. This happens every 30 seconds.\n" +
                    "loadunenc [filename]    Loads an unencrypted settings.json file from disk.\n" +
                    "dumpsettings            Prints the settings file contents, unencrypted, to the console\n" +
                    "plugins                 List loaded plugins\n" +
-                   "load [plugin]           Loads a plugin into AstralMod\n" +
-                   "unload [plugin]         Unloads a plugin from AstralMod\n" +
-                   "reload [plugin]         Unloads and then loads a plugin into AstralMod\n" +
-                   "broadcast [message]     Broadcasts a message to every server AstralMod is connected to\n" +
-                   "vacuum                  Check the AstralMod Configuration File for errors\n" +
+                   "load [plugin]           Loads a plugin into WorkFlow Bot\n" +
+                   "unload [plugin]         Unloads a plugin from WorkFlow Bot\n" +
+                   "reload [plugin]         Unloads and then loads a plugin into WorkFlow Bot\n" +
+                   "broadcast [message]     Broadcasts a message to every server WorkFlow Bot is connected to\n" +
+                   "vacuum                  Check the WorkFlow Bot Configuration File for errors\n" +
                    "reconnect               Attempts to disconnect and reconnect to Discord\n" +
-                   "guilds                  Lists guilds AstralMod knows about\n" +
+                   "guilds                  Lists guilds WorkFlow Bot knows about\n" +
                    "ginfo [guildid]         Shows information about a guild\n" +
                    "ginfom [guildid]        Shows members inside a guild\n" +
                    "ginfoc [guildid]        Shows channels inside a guild\n" +
                    "ginfob [guildid]        Shows bans of a guild\n" +
                    "cinfo [channelid]       Finds a channel by its ID\n" +
-                   "exit                    Exits AstralMod";
+                   "exit                    Exits WorkFlow Bot";
         log(help, logType.info);
     } else if (lLine == "exit") {
         shutdown();
@@ -975,7 +975,7 @@ function processConsoleInput(line) {
     } else if (lLine == "cinfo") {
         log("Usage: cinfo [channelid]", logType.critical);
     } else if (lLine == "guilds") {
-        var response = "Guilds AstralMod is connected to:";
+        var response = "Guilds WorkFlow Bot is connected to:";
 
         for ([id, guild] of client.guilds) {
             response += "\n" + guild.id + "  " + guild.name + "";
@@ -1256,14 +1256,14 @@ function shutdown() {
         }
     }
 
-    log("Now exiting AstralMod.", logType.good);
+    log("Now exiting WorkFlow Bot.", logType.good);
     process.exit(0);
 }
 
 process.on('SIGINT', shutdown);
 process.on('SIGTERM', shutdown);
 
-log("Welcome to AstralMod!", logType.good);
+log("Welcome to WorkFlow Bot!", logType.good);
 
 global.getUserString = function(user) {
     var u = user;
@@ -1450,7 +1450,7 @@ global.uinfo = function(user, channel, guild = null, compact = false) {
             }
 
             if (banCounts[user.id] != 0 && banCounts[user.id] != null) {
-                msg += "- " + tr("This user has been banned from " + parseInt(banCounts[user.id]) + " servers known to AstralMod.");
+                msg += "- " + tr("This user has been banned from " + parseInt(banCounts[user.id]) + " servers known to WorkFlow Bot.");
             }
 
             if (msg != "") {
@@ -1498,7 +1498,7 @@ function processModCommand(message) {
             if (message.author.id == consts.users.vicr123 || message.author.id == message.guild.owner.user.id) {
                 settings.guilds[message.guild.id].configuringUser = message.author.id;
                 settings.guilds[message.guild.id].configuringStage = 0;
-                message.author.send("Welcome to AstralMod! To start, let's get the roles of mods on the server. Enter the roles of mods on this server, seperated by a space.")
+                message.author.send("Welcome to WorkFlow Bot! To start, let's get the roles of mods on the server. Enter the roles of mods on this server, seperated by a space.")
 
                 var roles = "```";
                 for (let [id, role] of message.guild.roles) {
@@ -1527,7 +1527,7 @@ function processModCommand(message) {
         }
     } else if (lText == prefix + "poweroff") {
         if (message.author.id == consts.users.vicr123 || message.author.id == consts.users.nebble) {
-            message.reply("AstralMod is now exiting.").then(function() {
+            message.reply("WorkFlow Bot is now exiting.").then(function() {
                 shutdown();
             });
         }
@@ -1575,7 +1575,7 @@ function processAmCommand(message) {
 
     //Make sure configuration is not required
     if (settings.guilds[message.guild.id].requiresConfig && text != prefix + "config") {
-        message.reply("AstralMod setup isn't complete. You'll need to wait for " + message.guild.owner.displayName + " to type `" + prefix + "config` and set up AstralMod before you can use it.");
+        message.reply("WorkFlow Bot setup isn't complete. You'll need to wait for " + message.guild.owner.displayName + " to type `" + prefix + "config` and set up WorkFlow Bot before you can use it.");
     } else {
         var command;
 
@@ -1602,7 +1602,7 @@ function processAmCommand(message) {
                     message.reply(tr("Ok, give us a bit to make sure the mods are ok with that."));
                 }
             } else {
-                message.reply(tr("Nickname changes are not accepted on this server via AstralMod."));
+                message.reply(tr("Nickname changes are not accepted on this server via WorkFlow Bot."));
             }
             return true;
         } else if (command.startsWith("nick ")) {
@@ -1616,7 +1616,7 @@ function processAmCommand(message) {
                     message.reply(tr("Alright, give us a bit to make sure the mods are OK with that."));
                 }
             } else {
-                message.reply(tr("Nickname changes are not accepted on this server via AstralMod."));
+                message.reply(tr("Nickname changes are not accepted on this server via WorkFlow Bot."));
             }
             return true;
         } else if (command == "suggest") {
@@ -1626,31 +1626,31 @@ function processAmCommand(message) {
             message.reply("Suggestions are coming soon. Stay tuned!");
             return true;
         } else if (command == "version") {
-            message.channel.send("**AstralMod " + amVersion + "**\nDiscord Bot");
+            message.channel.send("**WorkFlow Bot " + amVersion + "**\nDiscord Bot");
             return true;
         /*} else if (command.startsWith("setlocale ")) {
             let locale = command.substr(10);
             if (!fs.existsSync("./translations/" + locale)) {
-                message.channel.send(tr("Unfortunately we don't have that locale in AstralMod."));
+                message.channel.send(tr("Unfortunately we don't have that locale in WorkFlow Bot."));
             } else {
                 settings.users[message.author.id].locale = locale;
                 translator.setLocale(locale);
 
                 let embed = new Discord.RichEmbed();
                 embed.setColor("#003CFF");
-                embed.setAuthor(tr("AstralMod Localisation"));
+                embed.setAuthor(tr("WorkFlow Bot Localisation"));
                 embed.setDescription(tr("Alright, your locale is now English."));
-                embed.setFooter(tr("AstralMod Localisation is in the preview stage. Many items will not be translated."))
+                embed.setFooter(tr("WorkFlow Bot Localisation is in the preview stage. Many items will not be translated."))
                 message.channel.send(embed);
             }
             return true;*/
         } else if (command == "help") { //General help
             var embed = new Discord.RichEmbed();
             embed.setColor("#3C3C96");
-            embed.setAuthor("AstralMod Help Contents");
+            embed.setAuthor("WorkFlow Bot Help Contents");
             embed.setDescription("Here are some things you can try. For more information, just `" + prefix + "help [command]`");
 
-            embed.addField("AstralMod Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nsetlocale\nhelp", true);
+            embed.addField("WorkFlow Bot Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nsetlocale\nhelp", true);
 
             for (key in plugins) {
                 var plugin = plugins[key];
@@ -1691,7 +1691,7 @@ function processAmCommand(message) {
                 }
             }
 
-            embed.setFooter("AstralMod " + amVersion + ". Moderator commands denoted with bold text.");
+            embed.setFooter("WorkFlow Bot " + amVersion + ". Moderator commands denoted with bold text.");
             message.channel.send("", { embed: embed });
             return true;
         } else if (command.startsWith("fetchuser ")) {
@@ -1705,7 +1705,7 @@ function processAmCommand(message) {
         } else if (command.startsWith("help ")) { //Contextual help
             //Get help for specific command
             var embed = new Discord.RichEmbed();
-            embed.setAuthor("AstralMod Help Contents");
+            embed.setAuthor("WorkFlow Bot Help Contents");
 
             var helpCmd = command.substr(5);
 
@@ -1713,7 +1713,7 @@ function processAmCommand(message) {
             switch (helpCmd) {
                 case "config":
                     help.title = prefix + "config";
-                    help.helpText = "Configures AstralMod for this server";
+                    help.helpText = "Configures WorkFlow Bot for this server";
                     break;
                 case "shoo":
                     help.title = prefix + "shoo";
@@ -1725,11 +1725,11 @@ function processAmCommand(message) {
                     break;
                 case "ping":
                     help.title = prefix + "ping";
-                    help.helpText = "Asks AstralMod to reply with a message";
+                    help.helpText = "Asks WorkFlow Bot to reply with a message";
                     break;
                 case "version":
                     help.title = prefix + "version";
-                    help.helpText = "Queries the current AstralMod version";
+                    help.helpText = "Queries the current WorkFlow Bot version";
                     break;
                 case "nick":
                     help.title = prefix + "nick";
@@ -1740,19 +1740,19 @@ function processAmCommand(message) {
                 case "fetchuser":
                     help.title = prefix + "fetchuser";
                     help.usageText = prefix + "fetchuser [ID]";
-                    help.helpText = "Tells AstralMod about the existance of a user";
-                    help.param1 = "The user ID you want to tell AstralMod about.";
-                    help.remarks = "AstralMod will search for users from all of Discord."
+                    help.helpText = "Tells WorkFlow Bot about the existance of a user";
+                    help.param1 = "The user ID you want to tell WorkFlow Bot about.";
+                    help.remarks = "WorkFlow Bot will search for users from all of Discord."
                     break;
                 case "setlocale":
                     help.title = prefix + "setlocale";
                     help.usageText = prefix + "setlocale [locale]";
-                    help.helpText = "Sets the language AstralMod will use when processing your commands";
+                    help.helpText = "Sets the language WorkFlow Bot will use when processing your commands";
                     break;
                 case "help":
                     help.title = prefix + "help";
                     help.usageText = prefix + "help [command]";
-                    help.helpText = "Acquire information about how to use AstralMod and any available commands";
+                    help.helpText = "Acquire information about how to use WorkFlow Bot and any available commands";
                     help.param1 = "*Optional Parameter*\n" +
                                   "The command to acquire information about.\n" +
                                   "If this parameter is not present, we'll list the available commands.";
@@ -1853,7 +1853,7 @@ function processAmCommand(message) {
                     embed.addField("Remarks", help.remarks);
                 }
             }
-            embed.setFooter("AstralMod " + amVersion);
+            embed.setFooter("WorkFlow Bot " + amVersion);
             message.channel.send("", { embed: embed });
             return true;
         } else if (command.startsWith("throw ")) {
@@ -2071,7 +2071,7 @@ function processConfigure(message, guild) {
                     guildSetting.configuringStage = 9;
                 } else if (text == "no" || text == "n") {
                     guildSetting.suggestions = null;
-                    message.author.send("Thanks. AstralMod is now ready for use! Enjoy using AstralMod!");
+                    message.author.send("Thanks. WorkFlow Bot is now ready for use! Enjoy using WorkFlow Bot!");
                     guildSetting.requiresConfig = false;
                     guildSetting.configuringUser = null;
                 } else {
@@ -2099,7 +2099,7 @@ function processConfigure(message, guild) {
                     guildSetting.suggestions = guildSetting.tentativeSuggestions;
                     guildSetting.tentativeSuggestions = null;
 
-                    message.author.send("Thanks. AstralMod is now ready for use! Enjoy using AstralMod!");
+                    message.author.send("Thanks. WorkFlow Bot is now ready for use! Enjoy using WorkFlow Bot!");
                     guildSetting.requiresConfig = false;
                     guildSetting.configuringUser = null;
                 } else if (text == "no" || text == "n") {
@@ -2162,7 +2162,7 @@ function getSingleConfigureWelcomeText(guild) {
 
     string += "\n";
     string += "0 Exit Configuration Menu\n";
-    string += "< Reset AstralMod```"
+    string += "< Reset WorkFlow Bot```"
 
     return string;
 }
@@ -2172,14 +2172,14 @@ function processSingleConfigure(message, guild) {
     var guildSetting = settings.guilds[guild.id];
 
     switch (guildSetting.configuringStage) {
-        case -10: { //Reset AstralMod
-            if (message.content == "Reset AstralMod") { //Purge all configuration for this server
+        case -10: { //Reset WorkFlow Bot
+            if (message.content == "Reset WorkFlow Bot") { //Purge all configuration for this server
                 log("Purging all configuration for " + guild.id);
                 guildSetting = {
                     requiresConfig: true
                 };
                 log("Configuration for " + guild.id + " purged.", logType.good);
-                message.author.send("AstralMod configuration for this server has been reset. To set up AstralMod, just `" + prefix + "config` in the server.");
+                message.author.send("WorkFlow Bot configuration for this server has been reset. To set up WorkFlow Bot, just `" + prefix + "config` in the server.");
             } else { //Cancel
                 message.author.send("Returning to Main Menu.");
                 message.author.send(getSingleConfigureWelcomeText(guild));
@@ -2243,10 +2243,10 @@ function processSingleConfigure(message, guild) {
                     message.author.send("Ok, I've toggled offensive words.");
                     message.author.send(getSingleConfigureWelcomeText(guild));
                     break;
-                case "<": //Reset AstralMod
-                    message.author.send("**Reset AstralMod**\n" +
-                                        "Resetting AstralMod for this server. This will clear all settings **and warnings** for this server and you'll need to set up AstralMod again to use it.\n" +
-                                        "To reset AstralMod, respond with `Reset AstralMod`.");
+                case "<": //Reset WorkFlow Bot
+                    message.author.send("**Reset WorkFlow Bot**\n" +
+                                        "Resetting WorkFlow Bot for this server. This will clear all settings **and warnings** for this server and you'll need to set up WorkFlow Bot again to use it.\n" +
+                                        "To reset WorkFlow Bot, respond with `Reset WorkFlow Bot`.");
                     guildSetting.configuringStage = -10;
                     break;
                 default:
@@ -2540,17 +2540,17 @@ function processMessage(message) {
 
         if (err.name == "UserInputError") {
             embed.setTitle("<:userexception:348796878709850114> User Input Error");
-            embed.setDescription("AstralMod didn't understand what you were trying to say.");
+            embed.setDescription("WorkFlow Bot didn't understand what you were trying to say.");
         } else if (err.name == "CommandError") {
             embed.setTitle("<:userexception:348796878709850114> Command Error");
-            embed.setDescription("AstralMod couldn't complete that command.");
+            embed.setDescription("WorkFlow Bot couldn't complete that command.");
         } else {
             log("Uncaught Exception:", logType.critical);
             log(err.stack, logType.critical);
 
             embed.setTitle("<:exception:346458871893590017> Internal Error");
             embed.setFooter("This error has been logged, and we'll look into it.");
-            embed.setDescription("AstralMod has run into a problem trying to process that command.");
+            embed.setDescription("WorkFlow Bot has run into a problem trying to process that command.");
         }
 
         message.channel.send("", {embed: embed});
@@ -2575,12 +2575,10 @@ function newGuild(guild) {
         //if (guild.defaultChannel) {
         if (guild.channels.size > 0) {
             if (guild.channels.array()[0].type == "text") {
-                guild.channels.array()[0].send(":wave: Welcome to AstralMod! To get started, " + guild.owner.displayName + " needs to type `" + prefix + "config`.");
+                guild.channels.array()[0].send(":wave: Welcome to WorkFlow Bot! To get started, " + guild.owner.displayName + " needs to type `" + prefix + "config`.");
             }
         }
     }
-
-    postDBL();
 }
 
 function removeGuild(guild) {
@@ -2588,8 +2586,6 @@ function removeGuild(guild) {
     settings.guilds[guild.id] = null;
     delete settings.guilds[guild.id];
     log("Removed Guild: " + guild.id, logType.info);
-
-    postDBL();
 }
 
 function saveSettings(showOkMessage = false) {
@@ -2897,7 +2893,7 @@ function unloadPlugin(file) {
 
 function vacuumSettings() {
     if (process.argv.indexOf("--novacuum") == -1) {
-        log("Checking the AstralMod Configuration file...", logType.info);
+        log("Checking the WorkFlow Bot Configuration file...", logType.info);
         fs.createReadStream('settings.json').pipe(fs.createWriteStream('.settings-backup.json'));
 
         var changesMade = false;
@@ -2920,10 +2916,10 @@ function vacuumSettings() {
         }
 
         if (error) {
-            //Quit AstralMod
-            log("AstralMod Configuration contains errors.", logType.critical);
-            log("From here, you can either\n- Attempt to fix the AstralMod configuration file, settings.json\n- Delete the AstralMod configuration file and start again.", logType.info);
-            log("AstralMod Configuration is corrupted. AstralMod cannot continue running. Exiting now.", logType.critical);
+            //Quit WorkFlow Bot
+            log("WorkFlow Bot Configuration contains errors.", logType.critical);
+            log("From here, you can either\n- Attempt to fix the WorkFlow Bot configuration file, settings.json\n- Delete the WorkFlow Bot configuration file and start again.", logType.info);
+            log("WorkFlow Bot Configuration is corrupted. WorkFlow Bot cannot continue running. Exiting now.", logType.critical);
             debugger;
             process.exit(1);
         }
@@ -2955,11 +2951,11 @@ function vacuumSettings() {
         }
 
         if (changesMade) {
-            log("AstralMod Configuration was checked and changes were made. No other actions need to be taken.", logType.warning);
+            log("WorkFlow Bot Configuration was checked and changes were made. No other actions need to be taken.", logType.warning);
             log("Old settings backed up as .settings-backup.json", logType.info);
         } else {
             fs.unlinkSync(".settings-backup.json");
-            log("AstralMod Configuration checked. No changes have been made", logType.good);
+            log("WorkFlow Bot Configuration checked. No changes have been made", logType.good);
         }
         return true;
     } else {
@@ -2991,11 +2987,11 @@ function guildMemberUpdate(oldUser, newUser) {
 }
 
 function readyAgain() {
-    log("AstralMod is ready again.", logType.good);
+    log("WorkFlow Bot is ready again.", logType.good);
 }
 
 function resume(replayed) {
-    log("AstralMod has reconnected to Discord. " + parseInt(replayed) + " events were replayed.", logType.good);
+    log("WorkFlow Bot has reconnected to Discord. " + parseInt(replayed) + " events were replayed.", logType.good);
 
     client.setInterval(setGame, 300000);
     setGame();
@@ -3066,7 +3062,7 @@ function readyOnce() {
     log("Checking if configuration file exists...");
 
     if (!fs.existsSync("settings.json")) {
-        log("AstralMod configuration file does not exist. Creating now.", logType.warning);
+        log("WorkFlow Bot configuration file does not exist. Creating now.", logType.warning);
         global.settings = {
             guilds: {
 
@@ -3082,7 +3078,7 @@ function readyOnce() {
         //Load in all guilds
         client.guilds.forEach(newGuild);
     } else {
-        log("Loading AstralMod configuration file...", logType.info);
+        log("Loading WorkFlow Bot configuration file...", logType.info);
 
         try {
             var file = fs.readFileSync("settings.json", "utf8");
@@ -3099,16 +3095,16 @@ function readyOnce() {
                 fs.createReadStream('settings.json').pipe(fs.createWriteStream('.settings-backup.json'));
                 fs.createReadStream('settings.prewrite.json').pipe(fs.createWriteStream('settings.json'));
             } catch (err2) {
-                log("Either the settings file is corrupted, or the encryption key is incorrect. AstralMod cannot start.", logType.critical);
+                log("Either the settings file is corrupted, or the encryption key is incorrect. WorkFlow Bot cannot start.", logType.critical);
                 return;
             }
         }
     }
 
     if (vacuumSettings()) {
-        log("AstralMod Configuration loaded.", logType.good);
+        log("WorkFlow Bot Configuration loaded.", logType.good);
     } else {
-        log("AstralMod Configuration contains errors.", logType.critical);
+        log("WorkFlow Bot Configuration contains errors.", logType.critical);
     }
 
     client.setInterval(setGame, 300000);
@@ -3135,7 +3131,7 @@ function readyOnce() {
     //Load plugins
     log("Loading plugins...");
     if (!fs.existsSync("plugins/")) {
-        log("AstralMod plugins folder does not exist. Creating now.", logType.warning);
+        log("WorkFlow Bot plugins folder does not exist. Creating now.", logType.warning);
         fs.mkdirSync("plugins/");
     }
 
@@ -3165,78 +3161,34 @@ function readyOnce() {
 
     setTimeout(saveSettings, 30000);
 
-    log("AstralMod " + amVersion + " - locked and loaded!", logType.good);
+    log("WorkFlow Bot " + amVersion + " - locked and loaded!", logType.good);
 
     countBans();
 
     setInterval(function() {
-        titleBox.content = "AstralMod " + amVersion + " Console  │  Uptime: " + moment.duration(client.uptime).humanize() +
+        titleBox.content = "WorkFlow Bot " + amVersion + " Console  │  Uptime: " + moment.duration(client.uptime).humanize() +
         "  │  Guilds: " + parseInt(client.guilds.size);
         renderScreen();
     }, 1000);
-
-    postDBL();
 }
 
 client.once('ready', readyOnce);
 
 client.on('disconnect', function(closeEvent) {
-    log("AstralMod has disconnected from Discord and will not attempt to reconnect.", logType.critical);
+    log("WorkFlow Bot has disconnected from Discord and will not attempt to reconnect.", logType.critical);
     log("Close code: " + parseInt(closeEvent.code), logType.critical);
-    log("At this point, you'll need to restart AstralMod.", logType.critical);
+    log("At this point, you'll need to restart WorkFlow Bot.", logType.critical);
 
     commandEmitter.emit('disconnect');
 });
 client.on('reconnecting', function() {
-    log("AstralMod has disconnected from Discord and is now attempting to reconnect.", logType.warning);
+    log("WorkFlow Bot has disconnected from Discord and is now attempting to reconnect.", logType.warning);
 
     commandEmitter.emit('disconnect');
 });
 
-function postDBL() {
-    if (process.argv.indexOf("--nodbl") == -1) {
-        //Post server count to DBL
-        let payload;
-
-        if (client.shard == null) {
-            payload = JSON.stringify({
-                server_count: client.guilds.size
-            });
-        } else {
-            payload = JSON.stringify({
-                server_count: client.guilds.size,
-                shard_id: client.shard.id,
-                shard_count: client.shard.count
-            });
-        }
-
-        let request = https.request({
-            host: "discordbots.org",
-            port: 443,
-            path: "/api/bots/" + client.user.id + "/stats",
-            method: "POST",
-            headers: {
-                "User-Agent": "AstralMod/" + amVersion,
-                "Authorization": keys.dblKey,
-                "Content-Type": "application/json"
-            }
-        }, function(res) {
-            res.setEncoding("utf8");
-            res.on("data", function(data) {
-                let response = JSON.parse(data);
-                if (response.hasOwnProperty("error")) {
-                    log("DBL: " + response.error, logType.error);
-                }
-            });
-        })
-
-        request.write(payload);
-        request.end();
-    }
-}
-
 if (process.argv.indexOf("--debug") == -1) {
-    log("Running AstralMod without --debug command line flag. Debug output disabled.", logType.info);
+    log("Running WorkFlow Bot without --debug command line flag. Debug output disabled.", logType.info);
 } else {
     //Enable debugging output from discord.js
 
@@ -3282,13 +3234,13 @@ log("Checking configuration...", logType.info);
 const requireDiscordVersion = "11.3.0";
 if (Discord.version != requireDiscordVersion) {
     log("Invalid Discord.JS version", logType.critical);
-    log("This version of AstralMod requires Discord.JS version " + requireDiscordVersion, logType.info);
+    log("This version of WorkFlow Bot requires Discord.JS version " + requireDiscordVersion, logType.info);
     log("Execution halted.", logType.critical);
 } else {
     if (keys.settingsKey == null) {
         log("Settings Encryption Key not found.", logType.critical);
-        log("To inform AstralMod about your settings encryption key,\n" +
-            "1. Create a file called keys.js in the same directory as AstralMod\n" +
+        log("To inform WorkFlow Bot about your settings encryption key,\n" +
+            "1. Create a file called keys.js in the same directory as WorkFlow Bot\n" +
             "2. Save the file with the following:\n" +
             "   exports.settingsKey = \"[a random password]\"", logType.info);
     } else {
@@ -3303,15 +3255,15 @@ if (Discord.version != requireDiscordVersion) {
                 });
             } else {
                 log("Login Token not found.", logType.critical);
-                log("To inform AstralMod about your token,\n" +
-                    "1. Create a file called keys.js in the same directory as AstralMod\n" +
+                log("To inform WorkFlow Bot about your token,\n" +
+                    "1. Create a file called keys.js in the same directory as WorkFlow Bot\n" +
                     "2. Save the file with the following:\n" +
                     "   exports.key = \"[your key here]\"", logType.info);
             }
         } catch (err) {
             log("Login Token not found.", logType.critical);
-            log("To inform AstralMod about your token,\n" +
-                "1. Create a file called keys.js in the same directory as AstralMod\n" +
+            log("To inform WorkFlow Bot about your token,\n" +
+                "1. Create a file called keys.js in the same directory as WorkFlow Bot\n" +
                 "2. Save the file with the following:\n" +
                 "   exports.key = \"[your key here]\"", logType.info);
         }
