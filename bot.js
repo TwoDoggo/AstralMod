@@ -20,8 +20,13 @@
 
 var amVersion;
 if (process.argv.indexOf("--blueprint") == -1) {
+<<<<<<< HEAD
     amVersion = "2.8.0";
     global.prefix = "?";
+=======
+    amVersion = "2.8.1";
+    global.prefix = "am:";
+>>>>>>> 6c7c48d8e3fbceeb7a76bf978dcfbd6175e45e67
 } else {
     amVersion = "Blueprint";
     global.prefix = "wf#";
@@ -1400,7 +1405,7 @@ global.uinfo = function(user, channel, guild = null, compact = false) {
             if (member.joinedAt.toUTCString() == "Thu, 01 Jan 1970 00:00:00 GMT") {
                 msg += "Joined at: -∞... and beyond! Discord seems to be giving incorrect info... :(";
             } else {
-                msg += tr("Joined at:") + " " + translator.localDate(user.joinedAt, "default", true);
+                msg += tr("Joined at:") + " " + translator.localDate(user.joinedTimestamp, "default", true);
             }
         }
         embed.setDescription(msg);
@@ -1418,7 +1423,7 @@ global.uinfo = function(user, channel, guild = null, compact = false) {
                 if (member.joinedAt.getTime() == 0) {
                     msg += "**" + tr("Joined") + "** -∞... and beyond! Discord seems to be giving incorrect info... :(";
                 } else {
-                    msg += "**" + tr("Joined") + "** " + translator.localDate(user.joinedAt, "default", true);
+                    msg += "**" + tr("Joined") + "** " + translator.localDate(member.joinedAt, "default", true);
                 }
             }
 
