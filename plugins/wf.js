@@ -22,6 +22,7 @@ const Discord = require('discord.js');
 const staffChannelID = "407659053473333269";
 var client;
 var consts;
+let messages = {};
 
 var currentWarnings = {};
 
@@ -221,6 +222,35 @@ function processCommand(message, isMod, command) {
     }
 }
 
+function newMessage(message) {
+    if (settings.guilds[message.guild.id].users == null) {
+        settings.guilds[message.guild.id].users = [];
+    }
+
+    if (settings.guilds[message.guild.id].users[message.author.id] == null) {
+        settings.guilds[message.guild.id].users[message.author.id] = {};
+    }
+
+    if (settings.guilds[message.guild.id].users[message.author.id].points == null) {
+        settings.guilds[message.guild.id].users[message.author.id].points = 0;
+    }
+
+    if (message.attachments && message.attachments.size > 0) {
+        settings.guilds[message.guild.id].users[message.author.id].points += 2;
+    } else {
+        if (messages[message.author.id] == null) {
+            messages[message.author.id] = 0;
+        }
+
+        messages[message.author.id]++;
+
+        if (messages[message.author.id] == 10) {
+            messages[message.author.id] = 0;
+            settings.guilds[message.guild.id].users[message.author.id].points += 1;
+        }
+    }
+}
+
 module.exports = {
     name: "WorkFlow",
     constructor: function(discordClient, commandEmitter, constants) {
@@ -228,9 +258,11 @@ module.exports = {
         consts = constants;
 
         commandEmitter.on('processCommand', processCommand);
+        commandEmitter.on('newMessage', newMessage);
     },
     destructor: function(commandEmitter) {
         commandEmitter.removeListener('processCommand', processCommand);
+        commandEmitter.removeListener('newMessage', newMessage);
     },
     availableCommands: {
         general: {
