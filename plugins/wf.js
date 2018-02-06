@@ -41,7 +41,7 @@ function processCommand(message, isMod, command) {
 
 
     if (settings.guilds[message.guild.id].users == null) {
-        settings.guilds[message.guild.id].users = [];
+        settings.guilds[message.guild.id].users = {};
     }
 
     if (settings.guilds[message.guild.id].users[message.author.id] == null) {
@@ -224,7 +224,7 @@ function processCommand(message, isMod, command) {
 
 function newMessage(message) {
     if (settings.guilds[message.guild.id].users == null) {
-        settings.guilds[message.guild.id].users = [];
+        settings.guilds[message.guild.id].users = {};
     }
 
     if (settings.guilds[message.guild.id].users[message.author.id] == null) {
