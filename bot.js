@@ -1326,20 +1326,24 @@ function setGame() {
         afk: false
     };
 
-    presence.game.name = getRandom("with ban buttons",
-                                   "Annoying Victor",
+    presence.game.name = getRandom("Sharpening pencils!",
+                                   "Keeping an eye on TwoDog",
+                                   "Changing lens focus", 
+                                   "Recording a new Tune", 
                                    prefix + "help",
                                    "v." + amVersion,
                                    "v." + amVersion,
                                    "Android Pay");
     client.user.setPresence(presence);*/
 
-    client.user.setActivity(getRandom("with ban buttons",
-                                      "Annoying Victor",
+    client.user.setActivity(getRandom("with lens focus",
+                                      "with Colouring Pencils!",
+                                      "Keeping an eye on TwoDog",
+                                      "Recording a new tune",
+                                      "writing latest novel",
                                       prefix + "help",
                                       "v." + amVersion,
-                                      "v." + amVersion,
-                                      "Android Pay"),
+                                      "with TwoDog & Acey"),
                                 {
                                     type: "PLAYING"
                                 }
