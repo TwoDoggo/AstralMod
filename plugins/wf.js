@@ -169,7 +169,7 @@ function processCommand(message, isMod, command) {
 
         for (let key in settings.guilds[message.guild.id].prizes) {
             let prize = settings.guilds[message.guild.id].prizes[key];
-            reply += prize.name + " - " + prize.value + " points" + "/n"
+            reply += prize.name + " - " + prize.value + " points" + /n
         }
 
         reply += "```";
