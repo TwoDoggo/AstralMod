@@ -1,22 +1,4 @@
-/****************************************
- * 
- *   Miscellaneous: Plugin for AstralMod that contains miscellaneous commands
- *   Copyright (C) 2017 Victor Tran
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- * 
- * *************************************/
+
 
 var client;
 var consts;
@@ -115,7 +97,7 @@ function processEval(message) {
 
 function processCommand(message, isMod, command) {
     if (command == "exec") {
-        if (message.author.id == "278805875978928128") {
+        if (message.author.id == "278805875978" || "123261299864895489" || "165445824090865665") {
             captureInput(processEval, message.guild.id, message.author.id);
 
             if (currentGuild != 0) {
