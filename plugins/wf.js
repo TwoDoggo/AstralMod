@@ -1,25 +1,5 @@
-/****************************************
- *
- *   Warnings: Plugin for AstralMod that manages warnings
- *   Copyright (C) 2017 Victor Tran
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 3 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- *
- *   You should have received a copy of the GNU General Public License
- *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * *************************************/
-
 const Discord = require('discord.js');
-const staffChannelID = "407659053473333269";
+const staffChannelID = "283109848693080064";
 var client;
 var consts;
 let messages = {};
@@ -189,7 +169,7 @@ function processCommand(message, isMod, command) {
 
         for (let key in settings.guilds[message.guild.id].prizes) {
             let prize = settings.guilds[message.guild.id].prizes[key];
-            reply += prize.name + " - " + prize.value + " points"
+            reply += prize.name + " - " + prize.value + " points \n"
         }
 
         reply += "```";
