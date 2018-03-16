@@ -21,7 +21,7 @@
 var amVersion;
 if (process.argv.indexOf("--blueprint") == -1) {
     global.prefix = "?";
-    amVersion = "2.8.1";
+    amVersion = "2.8.2";
 } else {
     amVersion = "Blueprint";
     global.prefix = "wf#";
@@ -42,6 +42,8 @@ const client = new Discord.Client({
     disableEveryone: true
 });
 const localize = require('localize');
+
+let doNotDeleteGuilds = [];
 
 //Load translations
 let translator;
@@ -97,6 +99,10 @@ var nickChanges = {};
 var lockBox = [];
 var banCounts = {};
 var finalStdout = "";
+
+let logFile = fs.createWriteStream("./log.log", {flags: 'a'});
+logFile.write("\n\n-----NEW SESSION START-----\n");
+logFile.write("ASTRALMOD " + amVersion + "\n");
 
 global.UserInputError = function() {
     var temp = Error.apply(this, arguments);
@@ -789,6 +795,11 @@ global.log = function(logMessage, type = logType.debug) {
         logBox.log("[" + new Date().toLocaleTimeString("us", {
             hour12: false
         }) + "] " + logOutput);
+
+        logFile.write("[" + new Date().toLocaleTimeString("us", {
+            hour12: false
+        }) + "] " + logString + "\n");
+        
         renderScreen();
     }
 }
@@ -2496,9 +2507,25 @@ function processMessage(message) {
 
         //Determine if this is in a guild
         if (message.guild != null) {
+            if (settings.guilds[message.guild.id].blocked == null) {
+                settings.guilds[message.guild.id].blocked = [];
+            }
+
             if (capture[message.guild.id] != null && capture[message.guild.id].author == message.author.id) {
                 capture[message.guild.id].function(message);
             } else if (text.toLowerCase().startsWith(prefix)) {
+                //Check if the command has been blocked
+                for (let key in settings.guilds[message.guild.id].blocked) {
+                    let c = settings.guilds[message.guild.id].blocked[key];
+                    let triedCommand = text.toLowerCase().substr(prefix.length);
+                    if (triedCommand.startsWith(c) || triedCommand == c || 
+                        (c == "all" && !triedCommand.startsWith("block") && !triedCommand.startsWith("unblock"))) {
+                        //Block this command and treat it like a normal message
+                        commandEmitter.emit('newMessage', message);
+                        return;
+                    }
+                }
+
                 //Determine if this is a command
                 if (isMod(message.member) || text == prefix + "config") { //This is a mod command
                     if (!processModCommand(message)) {
@@ -2586,10 +2613,16 @@ function newGuild(guild) {
 }
 
 function removeGuild(guild) {
-    //Delete guild from database
-    settings.guilds[guild.id] = null;
-    delete settings.guilds[guild.id];
-    log("Removed Guild: " + guild.id, logType.info);
+    if (doNotDeleteGuilds.indexOf(guild.id) == -1) {
+        //Delete guild from database
+        settings.guilds[guild.id] = null;
+        delete settings.guilds[guild.id];
+        log("Removed Guild: " + guild.id, logType.info);
+
+        postDBL();
+    } else {
+        log("Attempted to delete unavailable guild: " + guild.id, logType.warning);
+    }
 }
 
 function saveSettings(showOkMessage = false) {
@@ -2970,6 +3003,7 @@ function vacuumSettings() {
 
 function guildUnavailable(guild) {
     log(guild.id + " has become unavailable.", logType.critical);
+    doNotDeleteGuilds.push(guild.id);
 }
 
 function guildMemberUpdate(oldUser, newUser) {
