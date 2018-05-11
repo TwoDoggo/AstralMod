@@ -1,12 +1,27 @@
+/****************************************
+ *
+ *   WorkFlow Bot: Moderation bot for AstralPhaser Central and other Discord servers
+ *   Copyright (C) 2017 Victor Tran
+ *
+ *   This program is free software: you can redistribute it and/or modify
+ *   it under the terms of the GNU General Public License as published by
+ *   the Free Software Foundation, either version 3 of the License, or
+ *   (at your option) any later version.
+ *
+ *   This program is distributed in the hope that it will be useful,
+ *   but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *   GNU General Public License for more details.
+ *
+ *   You should have received a copy of the GNU General Public License
+ *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ * *************************************/
+
 var amVersion;
 if (process.argv.indexOf("--blueprint") == -1) {
-<<<<<<< HEAD
     global.prefix = "?";
-    amVersion = "2.8.2";
-=======
     amVersion = "2.9";
-    global.prefix = "am:";
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
 } else {
     amVersion = "Blueprint";
     global.prefix = "wf#";
@@ -88,7 +103,7 @@ global.banDescriptor = {};
 
 let logFile = fs.createWriteStream("./log.log", {flags: 'a'});
 logFile.write("\n\n-----NEW SESSION START-----\n");
-logFile.write("ASTRALMOD " + amVersion + "\n");
+logFile.write("WorkFlow Bot " + amVersion + "\n");
 
 global.UserInputError = function() {
     var temp = Error.apply(this, arguments);
@@ -1439,10 +1454,6 @@ global.uinfo = function(user, channel, guild = null, compact = false) {
                 embed.addField(tr("Timestamps"), msg);
             }
 
-<<<<<<< HEAD
-            if (banCounts[user.id] != 0 && banCounts[user.id] != null) {
-                msg += "- " + tr("This user has been banned from " + parseInt(banCounts[user.id]) + " servers known to WorkFlow Bot.");
-=======
             var msg;
             if (member.noGuild) {
                 msg = "**" + tr("Username") + "** " + user.username + "\n";
@@ -1458,7 +1469,6 @@ global.uinfo = function(user, channel, guild = null, compact = false) {
                 }
 
                 embed.addField(tr("Names"), msg);
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
             }
 
             {
@@ -1469,7 +1479,7 @@ global.uinfo = function(user, channel, guild = null, compact = false) {
                 }
 
                 if (banCounts[user.id] != 0 && banCounts[user.id] != null) {
-                    msg += "- " + tr("This user has been banned from " + parseInt(banCounts[user.id]) + " servers known to AstralMod.");
+                    msg += "- " + tr("This user has been banned from " + parseInt(banCounts[user.id]) + " servers known to WorkFlow Bot.");
                 }
 
                 if (msg != "") {
@@ -1588,48 +1598,6 @@ function processModCommand(message) {
 
 function processAmCommand(message) {
     var text = message.content;
-<<<<<<< HEAD
-
-    //Make sure configuration is not required
-    if (settings.guilds[message.guild.id].requiresConfig && text != prefix + "config") {
-        message.reply("WorkFlow Bot setup isn't complete. You'll need to wait for " + message.guild.owner.displayName + " to type `" + prefix + "config` and set up WorkFlow Bot before you can use it.");
-    } else {
-        var command;
-
-        command = text.toLowerCase().substr(prefix.length);
-
-        if (command == "ping") {
-            message.channel.send(getRandom('PONG! I want to play pong too... :\'(',
-                                           'PONG! I love playing pong!',
-                                           'PONG! Thanks for playing pong with me!',
-                                           'PONG!',
-                                           'Just going to break convention here and not start this reply normally.'));
-            message.delete().catch(function() {
-                logPromiseRejection(message, "messageDelete");
-            });
-            return true;
-        } else if (command == "nick") {
-            if (settings.guilds[message.guild.id].nickModeration) {
-                var nickResult = setNicknameTentative(message.member, "", message.guild);
-                if (nickResult == "cooldown") {
-                    message.reply(tr("There is a one day cooldown between use of this command."));
-                } else if (nickResult == "length") {
-                    message.reply(tr("Nicknames need to be less than 32 characters."));
-                } else {
-                    message.reply(tr("Ok, give us a bit to make sure the mods are ok with that."));
-                }
-            } else {
-                message.reply(tr("Nickname changes are not accepted on this server via WorkFlow Bot."));
-            }
-            return true;
-        } else if (command.startsWith("nick ")) {
-            if (settings.guilds[message.guild.id].nickModeration) {
-                var nickResult = setNicknameTentative(message.member, text.substr(8), message.guild);
-                if (nickResult == "cooldown") {
-                    message.reply(tr("There is a one day cooldown between use of this command."));
-                } else if (nickResult == "length") {
-                    message.reply(tr("Nicknames need to be less than 32 characters."));
-=======
     var command;
 
     command = text.toLowerCase().substr(prefix.length);
@@ -1662,7 +1630,6 @@ function processAmCommand(message) {
                     e = getEmoji("signal2");
                 } else if (time <= 1000) {
                     e = getEmoji("signal1");
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
                 } else {
                     e = getEmoji("signal0");
                 }
@@ -1681,47 +1648,10 @@ function processAmCommand(message) {
             } else if (nickResult == "length") {
                 message.reply(tr("Nicknames need to be less than 32 characters."));
             } else {
-<<<<<<< HEAD
-                message.reply(tr("Nickname changes are not accepted on this server via WorkFlow Bot."));
-            }
-            return true;
-        } else if (command == "suggest") {
-            message.reply("Suggestions are coming soon. Stay tuned!");
-            return true;
-        } else if (command.startsWith("suggest ")) {
-            message.reply("Suggestions are coming soon. Stay tuned!");
-            return true;
-        } else if (command == "version") {
-            message.channel.send("**WorkFlow Bot " + amVersion + "**\nDiscord Bot");
-            return true;
-        /*} else if (command.startsWith("setlocale ")) {
-            let locale = command.substr(10);
-            if (!fs.existsSync("./translations/" + locale)) {
-                message.channel.send(tr("Unfortunately we don't have that locale in WorkFlow Bot."));
-            } else {
-                settings.users[message.author.id].locale = locale;
-                translator.setLocale(locale);
-
-                let embed = new Discord.RichEmbed();
-                embed.setColor("#003CFF");
-                embed.setAuthor(tr("WorkFlow Bot Localisation"));
-                embed.setDescription(tr("Alright, your locale is now English."));
-                embed.setFooter(tr("WorkFlow Bot Localisation is in the preview stage. Many items will not be translated."))
-                message.channel.send(embed);
-            }
-            return true;*/
-        } else if (command == "help") { //General help
-            var embed = new Discord.RichEmbed();
-            embed.setColor("#3C3C96");
-            embed.setAuthor("WorkFlow Bot Help Contents");
-            embed.setDescription("Here are some things you can try. For more information, just `" + prefix + "help [command]`");
-
-            embed.addField("WorkFlow Bot Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nsetlocale\nhelp", true);
-=======
                 message.reply(tr("Ok, give us a bit to make sure the mods are ok with that."));
             }
         } else {
-            message.reply(tr("Nickname changes are not accepted on this server via AstralMod."));
+            message.reply(tr("Nickname changes are not accepted on this server via WorkFlow Bot."));
         }
         return true;
     } else if (command.startsWith("nick ")) {
@@ -1735,7 +1665,7 @@ function processAmCommand(message) {
                 message.reply(tr("Alright, give us a bit to make sure the mods are OK with that."));
             }
         } else {
-            message.reply(tr("Nickname changes are not accepted on this server via AstralMod."));
+            message.reply(tr("Nickname changes are not accepted on this server via WorkFlow Bot."));
         }
         return true;
     } else if (command == "suggest") {
@@ -1745,32 +1675,31 @@ function processAmCommand(message) {
         message.reply("Suggestions are coming soon. Stay tuned!");
         return true;
     } else if (command == "version") {
-        message.channel.send("**AstralMod " + amVersion + "**\nDiscord Bot");
+        message.channel.send("**WorkFlow Bot " + amVersion + "**\nDiscord Bot");
         return true;
     /*} else if (command.startsWith("setlocale ")) {
         let locale = command.substr(10);
         if (!fs.existsSync("./translations/" + locale)) {
-            message.channel.send(tr("Unfortunately we don't have that locale in AstralMod."));
+            message.channel.send(tr("Unfortunately we don't have that locale in WorkFlow Bot."));
         } else {
             settings.users[message.author.id].locale = locale;
             translator.setLocale(locale);
 
             let embed = new Discord.RichEmbed();
             embed.setColor("#003CFF");
-            embed.setAuthor(tr("AstralMod Localisation"));
+            embed.setAuthor(tr("WorkFlow Bot Localisation"));
             embed.setDescription(tr("Alright, your locale is now English."));
-            embed.setFooter(tr("AstralMod Localisation is in the preview stage. Many items will not be translated."))
+            embed.setFooter(tr("WorkFlow Bot Localisation is in the preview stage. Many items will not be translated."))
             message.channel.send(embed);
         }
         return true;*/
     } else if (command == "help") { //General help
         var embed = new Discord.RichEmbed();
         embed.setColor("#3C3C96");
-        embed.setAuthor("AstralMod Help Contents");
+        embed.setAuthor("WorkFlow Bot Help Contents");
         embed.setDescription("Here are some things you can try. For more information, just `" + prefix + "help [command]`");
 
-        embed.addField("AstralMod Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nsetlocale\nhelp", true);
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
+        embed.addField("WorkFlow Bot Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nsetlocale\nhelp", true);
 
         for (key in plugins) {
             var plugin = plugins[key];
@@ -1811,87 +1740,7 @@ function processAmCommand(message) {
             }
         }
 
-<<<<<<< HEAD
-            embed.setFooter("WorkFlow Bot " + amVersion + ". Moderator commands denoted with bold text.");
-            message.channel.send("", { embed: embed });
-            return true;
-        } else if (command.startsWith("fetchuser ")) {
-            var user = command.substr(10);
-            client.fetchUser(user).then(function(dUser) {
-                message.channel.send(tr("User " + dUser.tag + " fetched and cached."));
-            }).catch(function() {
-                message.channel.send(tr("Couldn't fetch user."));
-            });
-            return true;
-        } else if (command.startsWith("help ")) { //Contextual help
-            //Get help for specific command
-            var embed = new Discord.RichEmbed();
-            embed.setAuthor("WorkFlow Bot Help Contents");
-
-            var helpCmd = command.substr(5);
-
-            var help = {};
-            switch (helpCmd) {
-                case "config":
-                    help.title = prefix + "config";
-                    help.helpText = "Configures WorkFlow Bot for this server";
-                    break;
-                case "shoo":
-                    help.title = prefix + "shoo";
-                    help.helpText = "Leave the server, purging all configuration";
-                    break;
-                case "oknick":
-                    help.title = prefix + "oknick";
-                    help.helpText = "Accepts a nickname";
-                    break;
-                case "ping":
-                    help.title = prefix + "ping";
-                    help.helpText = "Asks WorkFlow Bot to reply with a message";
-                    break;
-                case "version":
-                    help.title = prefix + "version";
-                    help.helpText = "Queries the current WorkFlow Bot version";
-                    break;
-                case "nick":
-                    help.title = prefix + "nick";
-                    help.usageText = prefix + "nick nickname";
-                    help.helpText = "Sets your nickname after staff have a chance to review it";
-                    help.param1 = "The nickname you wish to be known as";
-                    break;
-                case "fetchuser":
-                    help.title = prefix + "fetchuser";
-                    help.usageText = prefix + "fetchuser [ID]";
-                    help.helpText = "Tells WorkFlow Bot about the existance of a user";
-                    help.param1 = "The user ID you want to tell WorkFlow Bot about.";
-                    help.remarks = "WorkFlow Bot will search for users from all of Discord."
-                    break;
-                case "setlocale":
-                    help.title = prefix + "setlocale";
-                    help.usageText = prefix + "setlocale [locale]";
-                    help.helpText = "Sets the language WorkFlow Bot will use when processing your commands";
-                    break;
-                case "help":
-                    help.title = prefix + "help";
-                    help.usageText = prefix + "help [command]";
-                    help.helpText = "Acquire information about how to use WorkFlow Bot and any available commands";
-                    help.param1 = "*Optional Parameter*\n" +
-                                  "The command to acquire information about.\n" +
-                                  "If this parameter is not present, we'll list the available commands.";
-                    break;
-                default:
-                    //Look thorough plugins for help
-                    for (key in plugins) {
-                        var plugin = plugins[key];
-                        if (plugin.acquireHelp != null) {
-                            if (plugin.availableCommands != null) {
-                                if (plugin.availableCommands.general != null) {
-                                    if (plugin.availableCommands.general.hiddenCommands != null) {
-                                        if (plugin.availableCommands.general.hiddenCommands.indexOf(helpCmd) != -1) {
-                                            help = plugin.acquireHelp(helpCmd);
-                                            break;
-                                        }
-=======
-        embed.setFooter("AstralMod " + amVersion + ". Moderator commands denoted with bold text.");
+        embed.setFooter("WorkFlow Bot " + amVersion + ". Moderator commands denoted with bold text.");
         message.channel.send("", { embed: embed });
         return true;
     } else if (command.startsWith("fetchuser ")) {
@@ -1905,7 +1754,7 @@ function processAmCommand(message) {
     } else if (command.startsWith("help ")) { //Contextual help
         //Get help for specific command
         var embed = new Discord.RichEmbed();
-        embed.setAuthor("AstralMod Help Contents");
+        embed.setAuthor("WorkFlow Bot Help Contents");
 
         var helpCmd = command.substr(5);
 
@@ -1913,7 +1762,7 @@ function processAmCommand(message) {
         switch (helpCmd) {
             case "config":
                 help.title = prefix + "config";
-                help.helpText = "Configures AstralMod for this server";
+                help.helpText = "Configures WorkFlow Bot for this server";
                 break;
             case "shoo":
                 help.title = prefix + "shoo";
@@ -1925,11 +1774,11 @@ function processAmCommand(message) {
                 break;
             case "ping":
                 help.title = prefix + "ping";
-                help.helpText = "Asks AstralMod to reply with a message";
+                help.helpText = "Asks WorkFlow Bot to reply with a message";
                 break;
             case "version":
                 help.title = prefix + "version";
-                help.helpText = "Queries the current AstralMod version";
+                help.helpText = "Queries the current WorkFlow Bot version";
                 break;
             case "nick":
                 help.title = prefix + "nick";
@@ -1940,19 +1789,19 @@ function processAmCommand(message) {
             case "fetchuser":
                 help.title = prefix + "fetchuser";
                 help.usageText = prefix + "fetchuser [ID]";
-                help.helpText = "Tells AstralMod about the existance of a user";
-                help.param1 = "The user ID you want to tell AstralMod about.";
-                help.remarks = "AstralMod will search for users from all of Discord."
+                help.helpText = "Tells WorkFlow Bot about the existance of a user";
+                help.param1 = "The user ID you want to tell WorkFlow Bot about.";
+                help.remarks = "WorkFlow Bot will search for users from all of Discord."
                 break;
             case "setlocale":
                 help.title = prefix + "setlocale";
                 help.usageText = prefix + "setlocale [locale]";
-                help.helpText = "Sets the language AstralMod will use when processing your commands";
+                help.helpText = "Sets the language WorkFlow Bot will use when processing your commands";
                 break;
             case "help":
                 help.title = prefix + "help";
                 help.usageText = prefix + "help [command]";
-                help.helpText = "Acquire information about how to use AstralMod and any available commands";
+                help.helpText = "Acquire information about how to use WorkFlow Bot and any available commands";
                 help.param1 = "*Optional Parameter*\n" +
                                 "The command to acquire information about.\n" +
                                 "If this parameter is not present, we'll list the available commands.";
@@ -1968,7 +1817,6 @@ function processAmCommand(message) {
                                     if (plugin.availableCommands.general.hiddenCommands.indexOf(helpCmd) != -1) {
                                         help = plugin.acquireHelp(helpCmd);
                                         break;
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
                                     }
                                 }
 
@@ -2053,18 +1901,8 @@ function processAmCommand(message) {
             if (help.remarks != null) {
                 embed.addField("Remarks", help.remarks);
             }
-<<<<<<< HEAD
-            embed.setFooter("WorkFlow Bot " + amVersion);
-            message.channel.send("", { embed: embed });
-            return true;
-        } else if (command.startsWith("throw ")) {
-            var msg = command.substr(6);
-            throw new Error(msg);
-            return true;
-=======
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
         }
-        embed.setFooter("AstralMod " + amVersion);
+        embed.setFooter("WorkFlow Bot " + amVersion);
         message.channel.send("", { embed: embed });
         return true;
     } else if (command.startsWith("throw ")) {
@@ -2785,19 +2623,11 @@ async function processMessage(message) {
         embed.addField("Details", err.message);
 
         if (err.name == "UserInputError") {
-<<<<<<< HEAD
             embed.setTitle("<:userexception:348796878709850114> User Input Error");
             embed.setDescription("WorkFlow Bot didn't understand what you were trying to say.");
         } else if (err.name == "CommandError") {
             embed.setTitle("<:userexception:348796878709850114> Command Error");
             embed.setDescription("WorkFlow Bot couldn't complete that command.");
-=======
-            embed.setTitle(getEmoji("userexception") + " User Input Error");
-            embed.setDescription("AstralMod didn't understand what you were trying to say.");
-        } else if (err.name == "CommandError") {
-            embed.setTitle(getEmoji("userexception") + " Command Error");
-            embed.setDescription("AstralMod couldn't complete that command.");
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
         } else {
             log("Uncaught Exception:", logType.critical);
             log(err.stack, logType.critical);
@@ -2826,24 +2656,16 @@ function newGuild(guild) {
 
 
     if (process.argv.indexOf("--nowelcome") == -1) {
-<<<<<<< HEAD
-        //if (guild.defaultChannel) {
-        if (guild.channels.size > 0) {
-            if (guild.channels.array()[0].type == "text") {
-                guild.channels.array()[0].send(":wave: Welcome to WorkFlow Bot! To get started, " + guild.owner.displayName + " needs to type `" + prefix + "config`.");
-            }
-=======
         let channel = guild.channels.find("name", "general");
         if (channel == null) {
             channel = guild.channels.find("name", "lounge");
         }
 
-        let message = ":wave: Welcome to AstralMod! To get started, set me up in `" + guild.name + "` by tying `" + prefix + "config`. To see the help index, use `" + prefix + "help`.";
+        let message = ":wave: Welcome to WorkFlow Bot! To get started, set me up in `" + guild.name + "` by tying `" + prefix + "config`. To see the help index, use `" + prefix + "help`.";
         if (channel == null) {
             guild.owner.send(message);
         } else {
             channel.send(message);
->>>>>>> 648bfc3b7baa2b7d6e5bff049da0a413d3846dd2
         }
     }
 }
