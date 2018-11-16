@@ -21,7 +21,7 @@
 var amVersion;
 if (process.argv.indexOf("--blueprint") == -1) {
     global.prefix = "?";
-    amVersion = "2.9";
+    amVersion = "2.10";
 } else {
     amVersion = "Blueprint";
     global.prefix = "wf#";
@@ -98,6 +98,7 @@ var listening = true;
 var nickChanges = {};
 var lockBox = [];
 var banCounts = {};
+var knownInvites = {};
 var finalStdout = "";
 global.banDescriptor = {};
 
@@ -1377,7 +1378,11 @@ function setGame() {
 
 function isMod(member) {
     var modRoles = settings.guilds[member.guild.id].modRoles;
-    if (modRoles != null) {
+    if (modRoles == null) {
+        if (member.permissions.has(Discord.Permissions.FLAGS.BAN_MEMBERS, true)) {
+            return true;
+        }
+    } else {
         for (role of modRoles) {
             if (member.roles.has(role)) {
                 return true;
@@ -1675,7 +1680,18 @@ function processAmCommand(message) {
         message.reply("Suggestions are coming soon. Stay tuned!");
         return true;
     } else if (command == "version") {
-        message.channel.send("**WorkFlow Bot " + amVersion + "**\nDiscord Bot");
+        message.channel.send("**WorkFlow Bot " + amVersion + "**\nDiscord Bot\n\nLicensed under the GNU General Public License, version 3 or later.");
+        return true;
+    } else if (command == "about") {
+        let embed = new Discord.RichEmbed();
+        embed.setColor("#00C000");
+        embed.setAuthor(tr("WorkFlow Bot " + amVersion), client.user.avatarURL);
+        embed.setDescription(tr("Discord Bot"));
+        embed.addField("File Bug", "File a bug at the [GitHub Repository](https://github.com/vicr123/AstralMod/issues) for AstralMod.");
+        embed.addField("Sources", "Source code for WorkFlow Bot is available at the [GitHub Repository for AstralMod](https://github.com/vicr123/AstralMod).");
+        embed.addField("Contributors", "WorkFlow Bot is possible due to the work of these wonderful people:\n- Blake#0007\n- reflectronic#1288\n\nWorkFlow Bot is also made possible because of AstralMod, and you can find more info at the [GitHub Repository](https://github.com/vicr123/AstralMod).");
+        embed.setFooter(tr("WorkFlow Bot " + amVersion + ". Thanks for using WorkFlow Bot!"));
+        message.channel.send(embed);
         return true;
     /*} else if (command.startsWith("setlocale ")) {
         let locale = command.substr(10);
@@ -1699,7 +1715,7 @@ function processAmCommand(message) {
         embed.setAuthor("WorkFlow Bot Help Contents");
         embed.setDescription("Here are some things you can try. For more information, just `" + prefix + "help [command]`");
 
-        embed.addField("WorkFlow Bot Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nsetlocale\nhelp", true);
+        embed.addField("WorkFlow Bot Core Commands", "**config**\n**shoo**\n**oknick**\nping\nnick\nfetchuser\nversion\nabout\nhelp", true);
 
         for (key in plugins) {
             var plugin = plugins[key];
@@ -1805,6 +1821,11 @@ function processAmCommand(message) {
                 help.param1 = "*Optional Parameter*\n" +
                                 "The command to acquire information about.\n" +
                                 "If this parameter is not present, we'll list the available commands.";
+                break;
+            case "about":
+                help.title = prefix + "about";
+                help.usageText = prefix + "about";
+                help.helpText = "Acquire information about AstralMod";
                 break;
             default:
                 //Look thorough plugins for help
@@ -2169,7 +2190,11 @@ function getSingleConfigureWelcomeText(guild) {
     var guildSetting = settings.guilds[guild.id];
     var string = "What would you like to configure? Type the number next to the option you want to set:```";
 
-    string += "1 Staff Roles        " + guildSetting.modRoles.length + " roles\n";
+    if (guildSetting.modRoles == null) {
+        string += "1 Staff Roles        Using Discord Permissions\n";
+    } else {
+        string += "1 Staff Roles        " + guildSetting.modRoles.length + " roles\n";
+    }
 
     if (guild.channels.get(guildSetting.memberAlerts) == null) {
         string += "2 Member Alerts      Disabled\n";
@@ -2224,7 +2249,7 @@ function processSingleConfigure(message, guild) {
             if (message.content == "Reset WorkFlow Bot") { //Purge all configuration for this server
                 log("Purging all configuration for " + guild.id);
                 guildSetting = {
-                    requiresConfig: true
+                    requiresConfig: false
                 };
                 log("Configuration for " + guild.id + " purged.", logType.good);
                 message.author.send("WorkFlow Bot configuration for this server has been reset. To set up WorkFlow Bot, just `" + prefix + "config` in the server.");
@@ -2240,7 +2265,7 @@ function processSingleConfigure(message, guild) {
                 case "1": //Staff Roles
                     settings.guilds[guild.id].configuringUser = message.author.id;
                     settings.guilds[guild.id].configuringStage = 0;
-                    message.author.send("Enter the roles of mods on this server, seperated by a space. To cancel, just type \"cancel\"");
+                    message.author.send("Enter the roles of mods on this server, seperated by a space. To cancel, just type `cancel`, and to clear, type `clear`.");
 
                     var roles = "```";
                     for (let [id, role] of guild.roles) {
@@ -2298,7 +2323,7 @@ function processSingleConfigure(message, guild) {
                     guildSetting.configuringStage = -10;
                     break;
                 default:
-                    message.author.send("That's not an option.");
+                    //message.author.send("That's not an option.");
                     message.author.send(getSingleConfigureWelcomeText(guild));
             }
             break;
@@ -2306,6 +2331,9 @@ function processSingleConfigure(message, guild) {
         case 10: { //Staff Roles
             if (text == "cancel") {
                 message.author.send(getSingleConfigureWelcomeText(guild));
+                guildSetting.configuringStage = 0;
+            } else if (text == "clear") {
+                guildSetting.modRoles = null;
                 guildSetting.configuringStage = 0;
             } else {
                 var roles = text.split(" ");
@@ -2651,7 +2679,7 @@ function newGuild(guild) {
     }
 
     settings.guilds[guild.id] = {
-        requiresConfig: true
+        requiresConfig: false
     };
 
 
@@ -2841,19 +2869,39 @@ function memberAdd(member) {
     }
 
     if (channel != null) {
-        channel.send(":arrow_right: <@" + member.user.id + ">");
-
-        uinfo(member.user, channel, member.guild, true);
-
-        if (member.guild.id == 287937616685301762) {
-            var now = new Date();
-            var joinDate = member.user.createdAt;
-            if (joinDate.getDate() == now.getDate() && joinDate.getMonth() == now.getMonth() && joinDate.getFullYear() == now.getFullYear()) {
-                if (member.guild.id == 287937616685301762) {
-                    channel.send(":calendar: <@&326915978392764426> This member was created today.");
+        let sendWelcome = function(inviteCode) {
+            if (inviteCode == "") {
+                channel.send(":arrow_right: <@" + member.user.id + ">");
+            } else {
+                channel.send(":arrow_right: <@" + member.user.id + "> + Invite " + inviteCode);
+            }
+    
+            uinfo(member.user, channel, member.guild, true);
+    
+            if (member.guild.id == 287937616685301762) {
+                var now = new Date();
+                var joinDate = member.user.createdAt;
+                if (joinDate.getDate() == now.getDate() && joinDate.getMonth() == now.getMonth() && joinDate.getFullYear() == now.getFullYear()) {
+                    if (member.guild.id == 287937616685301762) {
+                        channel.send(":calendar: <@&326915978392764426> This member was created today.");
+                    }
                 }
             }
-        }
+        };
+
+        member.guild.fetchInvites().then(function(invites) {
+            let inviteCode = "";
+            for ([id, invite] of invites) {
+                if (knownInvites[invite.code] < invite.uses) {
+                    inviteCode = invite.code;
+                    knownInvites[invite.code] = invite.uses;
+                }
+            }
+
+            sendWelcome(inviteCode);
+        }).catch(function() {
+          sendWelcome("");
+        });
     }
 }
 
@@ -3054,6 +3102,10 @@ function vacuumSettings() {
                 log("Adding guild " + guild.id + " to the database.", logType.info);
                 newGuild(guild);
             }
+
+            if (settings.guilds[guild.id].requiresConfig == true) {
+                settings.guilds[guild.id].requiresConfig = false;
+            }
         }
 
         //Iterate over all guilds in settings
@@ -3128,6 +3180,19 @@ function countBans() {
                 } else {
                     banCounts[user.id]++;
                 }
+            }
+        }).catch(function() {
+          
+        });
+    }
+}
+
+function loadInvites() {
+    for (let [id, guild] of client.guilds) {
+        knownInvites[guild.id] = {};
+        guild.fetchInvites().then(function(invites) {
+            for ([id, invite] of invites) {
+                knownInvites[invite.code] = invite.uses;
             }
         }).catch(function() {
           
@@ -3283,6 +3348,8 @@ function readyOnce() {
     log("WorkFlow Bot " + amVersion + " - locked and loaded!", logType.good);
 
     countBans();
+    loadInvites();
+    setInterval(loadInvites, 300000);
 
     setInterval(function() {
         titleBox.content = "WorkFlow Bot " + amVersion + " Console  │  Uptime: " + moment.duration(client.uptime).humanize() +
